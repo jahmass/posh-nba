@@ -1,4 +1,7 @@
-﻿using System;
+﻿using NbaData.PowerShell.Contracts;
+using NbaData.PowerShell.Core;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -7,9 +10,6 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
-using NbaData.PowerShell.Contracts;
-using NbaData.PowerShell.Core;
-using Newtonsoft.Json.Linq;
 
 namespace NbaData.PowerShell
 {
@@ -17,12 +17,13 @@ namespace NbaData.PowerShell
     [OutputType(typeof(IList<Match>))]
     public class GetResultsCommand : AsyncCmdlet
     {
-        private const string MediaType = "application/json";
-
         [Parameter(ValueFromPipeline = true, ValueFromPipelineByPropertyName = true, Mandatory = false)]
         public DateTime Date { get; set; } = DateTime.UtcNow;
 
-        public string FormattedDate => Date.ToString("yyyyMMdd", DateTimeFormatInfo.InvariantInfo);
+        [Parameter()]
+        public SwitchParameter Finished { get; set; }
+        
+        public string FormattedDate => Date.ToString(Constants.NbaDataApi.DateParameterFormat, DateTimeFormatInfo.InvariantInfo);
 
         private HttpClient _client;
         private string _requestUri;
@@ -32,7 +33,7 @@ namespace NbaData.PowerShell
             _client = new HttpClient();
             _client.BaseAddress = new Uri(Constants.NbaDataApi.BaseUrl);
             _client.DefaultRequestHeaders.Accept.Clear();
-            _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaType));
+            _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(Constants.NbaDataApi.MediaType));
 
             // Create the request URI with the parameter
             _requestUri = Constants.NbaDataApi.ScoreboardRequest.Replace(Constants.NbaDataApi.DateParameter, FormattedDate);
@@ -53,6 +54,8 @@ namespace NbaData.PowerShell
 
                 foreach (var game in data["games"])
                 {
+                    if (Finished.IsPresent && (int)game["statusNum"] != 3) continue;
+
                     DateTime startTimeUTC = (DateTime)game["startTimeUTC"];
                     string hTeamTriCode = (string)game["hTeam"]["triCode"];
                     string vTeamTriCode = (string)game["vTeam"]["triCode"];
@@ -90,6 +93,10 @@ namespace NbaData.PowerShell
                               select match;
 
                 WriteObject(results.ToList());
+            }
+            else
+            {
+                WriteObject(new List<Match>());
             }
         }
 

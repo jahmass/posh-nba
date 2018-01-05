@@ -11,8 +11,10 @@ namespace NbaData.PowerShell
 
         public class NbaDataApi
         {
+            public const string MediaType = "application/json";
             public const string BaseUrl = "http://data.nba.net/";
             // Parameter date  has the format: yearmonthday => 20171231
+            public const string DateParameterFormat = "yyyyMMdd";
             public const string DateParameter = "{{date}}";
             public const string ScoreboardRequest = "data/10s/prod/v1/" + DateParameter + "/scoreboard.json";
         }

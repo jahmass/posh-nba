@@ -24,22 +24,24 @@ namespace NbaData.PowerShell
 
         protected override void ProcessRecord()
         {
-            foreach (var match in Matches)
+            if (Matches != null && Matches.Count > 0)
             {
-
-                if (match.HasResult)
+                foreach (var match in Matches)
                 {
-                    Host.UI.Write((match.VisitorScore > match.HomeScore) ? ConsoleColor.Green : ConsoleColor.Red, _defaultBackgroundColor, match.VisitorShortName);
-                    Host.UI.Write(_defaultForegroundColor, _defaultBackgroundColor, $" : {match.VisitorScore.Value.ToString().PadLeft(3, ' ')} - {match.HomeScore.Value.ToString().PadRight(3, ' ')} : ");
-                    Host.UI.Write((match.HomeScore > match.VisitorScore) ? ConsoleColor.Green : ConsoleColor.Red, _defaultBackgroundColor, match.HomeShortName);
-                }
-                else
-                {
-                    Host.UI.Write($"{match.VisitorShortName} : TBD - TBD : {match.HomeShortName}");
-                }
+                    if (match.HasResult)
+                    {
+                        Host.UI.Write((match.VisitorScore > match.HomeScore) ? ConsoleColor.Green : ConsoleColor.Red, _defaultBackgroundColor, match.VisitorShortName);
+                        Host.UI.Write(_defaultForegroundColor, _defaultBackgroundColor, $" : {match.VisitorScore.Value.ToString().PadLeft(3, ' ')} - {match.HomeScore.Value.ToString().PadRight(3, ' ')} : ");
+                        Host.UI.Write((match.HomeScore > match.VisitorScore) ? ConsoleColor.Green : ConsoleColor.Red, _defaultBackgroundColor, match.HomeShortName);
+                    }
+                    else
+                    {
+                        Host.UI.Write($"{match.VisitorShortName} : TBD - TBD : {match.HomeShortName}");
+                    }
 
-                // New line
-                Host.UI.WriteLine();
+                    // New line
+                    Host.UI.WriteLine();
+                }
             }
         }
     }
