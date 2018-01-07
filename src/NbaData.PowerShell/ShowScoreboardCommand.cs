@@ -8,7 +8,7 @@ namespace NbaData.PowerShell
     [Cmdlet(VerbsCommon.Show, Constants.Nouns.Scoreboard)]
     public class ShowScoreboardCommand : PSCmdlet
     {
-        [Parameter(Position = 0, ValueFromPipeline = true, ValueFromPipelineByPropertyName = true, ValueFromRemainingArguments = true, Mandatory = true)]
+        [Parameter(Position = 0, ValueFromPipeline = true, ValueFromPipelineByPropertyName = true, ValueFromRemainingArguments = true)]
         public IList<Match> Matches { get; set; }
 
         private ConsoleColor _defaultForegroundColor;
@@ -42,6 +42,11 @@ namespace NbaData.PowerShell
                     // New line
                     Host.UI.WriteLine();
                 }
+            }
+            else
+            {
+                // New line
+                Host.UI.WriteLine(ConsoleColor.Red, _defaultBackgroundColor, "No match!");
             }
         }
     }

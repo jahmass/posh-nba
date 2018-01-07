@@ -9,6 +9,7 @@ namespace NbaData.PowerShell.Contracts
         public int? VisitorScore { get; set; }
         public string HomeShortName { get; set; }
         public int? HomeScore { get; set; }
+        public MatchStatus Status { get; set; }
 
         public bool HasResult => VisitorScore.HasValue && HomeScore.HasValue;
     }
